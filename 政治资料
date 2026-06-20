@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高中政治复习资料</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #cbd5e1;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --accent: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h1::before {
+            content: '📚';
+            font-size: 24px;
+        }
+
+        .sidebar-search {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-search input {
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .sidebar-search input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .sidebar-search input:focus {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            padding: 12px 0;
+        }
+
+        .nav-module {
+            margin-bottom: 4px;
+        }
+
+        .nav-module-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-module-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-module-header.active {
+            background: rgba(37, 99, 235, 0.2);
+            border-left-color: var(--primary-light);
+            color: white;
+        }
+
+        .nav-module-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-module-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .nav-module-arrow {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .nav-module-header.expanded .nav-module-arrow {
+            transform: rotate(90deg);
+        }
+
+        .nav-topics {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-topics.expanded {
+            max-height: 500px;
+        }
+
+        .nav-topic {
+            padding: 10px 20px 10px 58px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--sidebar-text);
+            opacity: 0.8;
+        }
+
+        .nav-topic:hover {
+            background: rgba(255,255,255,0.05);
+            opacity: 1;
+        }
+
+        .nav-topic.active {
+            background: rgba(37, 99, 235, 0.15);
+            color: white;
+            opacity: 1;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 32px 40px;
+        }
+
+        /* 顶部工具栏 */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb span {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 模块概览卡片 */
+        .module-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-card-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* 知识点卡片 */
+        .content-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .section-badge {
+            padding: 4px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .knowledge-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .knowledge-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .knowledge-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .knowledge-card-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .knowledge-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .knowledge-card-body {
+            padding: 16px 20px;
+        }
+
+        .knowledge-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .knowledge-point::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .knowledge-card-footer {
+            padding: 12px 20px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .difficulty {
+            display: flex;
+            gap: 3px;
+        }
+
+        .difficulty-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        .difficulty-dot.filled {
+            background: var(--warning);
+        }
+
+        /* 试题区域 */
+        .quiz-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quiz-type {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .quiz-type.single {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+
+        .quiz-type.multi {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .quiz-type.judge {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .quiz-question {
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-light);
+            background: #f8fafc;
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #d1fae5;
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .quiz-option-label {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.selected .quiz-option-label {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .quiz-option.correct .quiz-option-label {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+
+        .quiz-option.wrong .quiz-option-label {
+            border-color: var(--danger);
+            background: var(--danger);
+            color: white;
+        }
+
+        .quiz-option-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .quiz-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .quiz-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .quiz-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .quiz-btn-secondary {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .quiz-btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .quiz-answer {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .quiz-answer.show {
+            display: block;
+        }
+
+        .quiz-answer-title {
+            font-weight: 600;
+            color: var(--success);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .quiz-answer-content {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        /* 隐藏内容 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 移动端菜单按钮 */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 200;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 24px 20px;
+                padding-top: 72px;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .knowledge-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .module-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .module-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .tag-important {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .tag-key {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .tag-basic {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <!-- 移动端菜单按钮 -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>高中政治复习</h1>
+        </div>
+        <div class="sidebar-search">
+            <input type="text" placeholder="搜索知识点或试题..." id="searchInput" oninput="handleSearch(this.value)">
+        </div>
+        <nav class="nav-menu" id="navMenu">
+            <!-- 模块1：中国特色社会主义 -->
+            <div class="nav-module" data-module="1">
+                <div class="nav-module-header expanded" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #ef4444, #f97316);">📕</div>
+                        中国特色社会主义
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics expanded">
+                    <div class="nav-topic active" onclick="showContent('1-1', this)">社会主义从空想到科学</div>
+                    <div class="nav-topic" onclick="showContent('1-2', this)">新民主主义革命</div>
+                    <div class="nav-topic" onclick="showContent('1-3', this)">社会主义制度确立</div>
+                    <div class="nav-topic" onclick="showContent('1-4', this)">中国特色社会主义道路</div>
+                </div>
+            </div>
+
+            <!-- 模块2：经济与社会 -->
+            <div class="nav-module" data-module="2">
+                <div class="nav-module-header" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #2563eb, #3b82f6);">📗</div>
+                        经济与社会
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics">
+                    <div class="nav-topic" onclick="showContent('2-1', this)">我国的基本经济制度</div>
+                    <div class="nav-topic" onclick="showContent('2-2', this)">社会主义市场经济体制</div>
+                    <div class="nav-topic" onclick="showContent('2-3', this)">经济发展与社会进步</div>
+                </div>
+            </div>
+
+            <!-- 模块3：政治与法治 -->
+            <div class="nav-module" data-module="3">
+                <div class="nav-module-header" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #059669, #10b981);">📘</div>
+                        政治与法治
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics">
+                    <div class="nav-topic" onclick="showContent('3-1', this)">中国共产党的领导</div>
+                    <div class="nav-topic" onclick="showContent('3-2', this)">人民当家作主</div>
+                    <div class="nav-topic" onclick="showContent('3-3', this)">全面依法治国</div>
+                </div>
+            </div>
+
+            <!-- 模块4：哲学与文化 -->
+            <div class="nav-module" data-module="4">
+                <div class="nav-module-header" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">📙</div>
+                        哲学与文化
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics">
+                    <div class="nav-topic" onclick="showContent('4-1', this)">哲学基本问题</div>
+                    <div class="nav-topic" onclick="showContent('4-2', this)">唯物辩证法</div>
+                    <div class="nav-topic" onclick="showContent('4-3', this)">认识论与价值观</div>
+                    <div class="nav-topic" onclick="showContent('4-4', this)">文化传承与创新</div>
+                </div>
+            </div>
+
+            <!-- 模块5：当代国际政治与经济 -->
+            <div class="nav-module" data-module="5">
+                <div class="nav-module-header" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #0891b2, #06b6d4);">📓</div>
+                        当代国际政治与经济
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics">
+                    <div class="nav-topic" onclick="showContent('5-1', this)">国际社会与国际关系</div>
+                    <div class="nav-topic" onclick="showContent('5-2', this)">世界多极化与经济全球化</div>
+                </div>
+            </div>
+
+            <!-- 模块6：法律与生活 -->
+            <div class="nav-module" data-module="6">
+                <div class="nav-module-header" onclick="toggleModule(this)">
+                    <div class="nav-module-title">
+                        <div class="nav-module-icon" style="background: linear-gradient(135deg, #d946ef, #ec4899);">📔</div>
+                        法律与生活
+                    </div>
+                    <span class="nav-module-arrow">▶</span>
+                </div>
+                <div class="nav-topics">
+                    <div class="nav-topic" onclick="showContent('6-1', this)">民事权利与义务</div>
+                    <div class="nav-topic" onclick="showContent('6-2', this)">家庭与婚姻</div>
+                    <div class="nav-topic" onclick="showContent('6-3', this)">就业与创业</div>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 面包屑 -->
+        <div class="toolbar">
+            <div class="breadcrumb">
+                📚 中国特色社会主义 / <span>社会主义从空想到科学</span>
+            </div>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('knowledge', this)">知识点</button>
+                <button class="view-btn" onclick="switchView('quiz', this)">试题练习</button>
+            </div>
+        </div>
+
+        <!-- 模块概览 -->
+        <div class="module-overview">
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: #fee2e2;">📖</div>
+                <div class="stat-card-value">4</div>
+                <div class="stat-card-label">本章知识点</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: #dbeafe;">✍️</div>
+                <div class="stat-card-value">12</div>
+                <div class="stat-card-label">配套试题</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: #d1fae5;">✅</div>
+                <div class="stat-card-value">0</div>
+                <div class="stat-card-label">已完成</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon" style="background: #fef3c7;">⭐</div>
+                <div class="stat-card-value">重点</div>
+                <div class="stat-card-label">考试频率</div>
+            </div>
+        </div>
+
+        <!-- 知识点内容 -->
+        <div id="knowledgeView">
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">核心知识点</h2>
+                    <span class="section-badge">4个知识点</span>
+                </div>
+                <div class="knowledge-grid">
+                    <!-- 知识点1 -->
+                    <div class="knowledge-card">
+                        <div class="knowledge-card-header">
+                            <div class="knowledge-card-num">1</div>
+                            <div class="knowledge-card-title">空想社会主义的产生与发展</div>
+                        </div>
+                        <div class="knowledge-card-body">
+                            <div class="knowledge-point">空想社会主义产生于16世纪初，代表人物有圣西门、傅立叶、欧文</div>
+                            <div class="knowledge-point">空想社会主义揭露和批判了资本主义社会的弊端</div>
+                            <div class="knowledge-point">空想社会主义没有找到改造社会的正确途径</div>
+                        </div>
+                        <div class="knowledge-card-footer">
+                            <span class="tag tag-basic">基础</span>
+                            <div class="difficulty">
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot"></span>
+                                <span class="difficulty-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 知识点2 -->
+                    <div class="knowledge-card">
+                        <div class="knowledge-card-header">
+                            <div class="knowledge-card-num">2</div>
+                            <div class="knowledge-card-title">科学社会主义的创立</div>
+                        </div>
+                        <div class="knowledge-card-body">
+                            <div class="knowledge-point">马克思、恩格斯创立了唯物史观和剩余价值学说</div>
+                            <div class="knowledge-point">1848年《共产党宣言》发表，标志着科学社会主义诞生</div>
+                            <div class="knowledge-point">科学社会主义揭示了资本主义必然灭亡的规律</div>
+                        </div>
+                        <div class="knowledge-card-footer">
+                            <span class="tag tag-important">重点</span>
+                            <div class="difficulty">
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 知识点3 -->
+                    <div class="knowledge-card">
+                        <div class="knowledge-card-header">
+                            <div class="knowledge-card-num">3</div>
+                            <div class="knowledge-card-title">十月革命与社会主义实践</div>
+                        </div>
+                        <div class="knowledge-card-body">
+                            <div class="knowledge-point">1917年十月革命建立了世界上第一个社会主义国家</div>
+                            <div class="knowledge-point">十月革命将社会主义从理论变为现实</div>
+                            <div class="knowledge-point">苏联社会主义建设的经验与教训</div>
+                        </div>
+                        <div class="knowledge-card-footer">
+                            <span class="tag tag-key">关键</span>
+                            <div class="difficulty">
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot filled"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 知识点4 -->
+                    <div class="knowledge-card">
+                        <div class="knowledge-card-header">
+                            <div class="knowledge-card-num">4</div>
+                            <div class="knowledge-card-title">社会主义在中国的发展</div>
+                        </div>
+                        <div class="knowledge-card-body">
+                            <div class="knowledge-point">新民主主义革命的胜利与新中国的成立</div>
+                            <div class="knowledge-point">社会主义制度在中国的确立</div>
+                            <div class="knowledge-point">中国特色社会主义进入新时代</div>
+                        </div>
+                        <div class="knowledge-card-footer">
+                            <span class="tag tag-important">重点</span>
+                            <div class="difficulty">
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot filled"></span>
+                                <span class="difficulty-dot filled"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 试题内容 -->
+        <div id="quizView" class="hidden">
+            <!-- 单选题 -->
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <div class="quiz-title">📝 第1题</div>
+                    <span class="quiz-type single">单选题</span>
+                </div>
+                <div class="quiz-question">
+                    科学社会主义创立的理论基石是（　　）
+                </div>
+                <div class="quiz-options" id="q1-options">
+                    <div class="quiz-option" onclick="selectOption('q1', 'A', this)">
+                        <div class="quiz-option-label">A</div>
+                        <div class="quiz-option-text">德国古典哲学</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q1', 'B', this)">
+                        <div class="quiz-option-label">B</div>
+                        <div class="quiz-option-text">英国古典政治经济学</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q1', 'C', this)">
+                        <div class="quiz-option-label">C</div>
+                        <div class="quiz-option-text">唯物史观和剩余价值学说</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q1', 'D', this)">
+                        <div class="quiz-option-label">D</div>
+                        <div class="quiz-option-text">英法空想社会主义</div>
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <button class="quiz-btn quiz-btn-primary" onclick="checkAnswer('q1')">查看答案</button>
+                    <button class="quiz-btn quiz-btn-secondary" onclick="resetQuiz('q1')">重新作答</button>
+                </div>
+                <div class="quiz-answer" id="q1-answer">
+                    <div class="quiz-answer-title">✅ 正确答案：C</div>
+                    <div class="quiz-answer-content">
+                        <strong>解析：</strong>马克思、恩格斯批判地继承了前人思想的精华，结合工人运动的实践经验，创立了唯物史观和剩余价值学说，并把社会主义思想置于这两大理论基石之上，从而使社会主义实现了从空想到科学的伟大飞跃。德国古典哲学、英国古典政治经济学和英法空想社会主义是科学社会主义的思想来源，而非理论基石。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 多选题 -->
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <div class="quiz-title">📝 第2题</div>
+                    <span class="quiz-type multi">多选题</span>
+                </div>
+                <div class="quiz-question">
+                    空想社会主义的历史局限性在于（　　）
+                </div>
+                <div class="quiz-options" id="q2-options">
+                    <div class="quiz-option" onclick="toggleMultiOption('q2', 'A', this)">
+                        <div class="quiz-option-label">A</div>
+                        <div class="quiz-option-text">没有看到资本主义必然灭亡的经济根源</div>
+                    </div>
+                    <div class="quiz-option" onclick="toggleMultiOption('q2', 'B', this)">
+                        <div class="quiz-option-label">B</div>
+                        <div class="quiz-option-text">没有找到改造社会的正确途径</div>
+                    </div>
+                    <div class="quiz-option" onclick="toggleMultiOption('q2', 'C', this)">
+                        <div class="quiz-option-label">C</div>
+                        <div class="quiz-option-text">没有认识到无产阶级的历史地位</div>
+                    </div>
+                    <div class="quiz-option" onclick="toggleMultiOption('q2', 'D', this)">
+                        <div class="quiz-option-label">D</div>
+                        <div class="quiz-option-text">没有揭露和批判资本主义社会的弊端</div>
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <button class="quiz-btn quiz-btn-primary" onclick="checkMultiAnswer('q2')">查看答案</button>
+                    <button class="quiz-btn quiz-btn-secondary" onclick="resetQuiz('q2')">重新作答</button>
+                </div>
+                <div class="quiz-answer" id="q2-answer">
+                    <div class="quiz-answer-title">✅ 正确答案：ABC</div>
+                    <div class="quiz-answer-content">
+                        <strong>解析：</strong>空想社会主义的局限性主要表现在：①没有看到资本主义必然灭亡的经济根源；②没有找到改造社会的正确途径；③没有认识到无产阶级的历史地位和作用。D选项错误，因为空想社会主义对资本主义社会的弊端进行了揭露和批判，这是其积极贡献之一。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 判断题 -->
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <div class="quiz-title">📝 第3题</div>
+                    <span class="quiz-type judge">判断题</span>
+                </div>
+                <div class="quiz-question">
+                    《共产党宣言》的发表标志着科学社会主义的诞生。（　　）
+                </div>
+                <div class="quiz-options" id="q3-options">
+                    <div class="quiz-option" onclick="selectOption('q3', 'A', this)">
+                        <div class="quiz-option-label">A</div>
+                        <div class="quiz-option-text">正确 ✓</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q3', 'B', this)">
+                        <div class="quiz-option-label">B</div>
+                        <div class="quiz-option-text">错误 ✗</div>
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <button class="quiz-btn quiz-btn-primary" onclick="checkAnswer('q3')">查看答案</button>
+                    <button class="quiz-btn quiz-btn-secondary" onclick="resetQuiz('q3')">重新作答</button>
+                </div>
+                <div class="quiz-answer" id="q3-answer">
+                    <div class="quiz-answer-title">✅ 正确答案：A（正确）</div>
+                    <div class="quiz-answer-content">
+                        <strong>解析：</strong>1848年2月，《共产党宣言》发表，标志着科学社会主义的诞生。《共产党宣言》分析了资本主义生产方式的内在矛盾与人类社会的发展规律，科学论证了资本主义必然灭亡和社会主义必然胜利的历史必然性。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 更多单选题 -->
+            <div class="quiz-section">
+                <div class="quiz-header">
+                    <div class="quiz-title">📝 第4题</div>
+                    <span class="quiz-type single">单选题</span>
+                </div>
+                <div class="quiz-question">
+                    十月革命最深远的历史意义是（　　）
+                </div>
+                <div class="quiz-options" id="q4-options">
+                    <div class="quiz-option" onclick="selectOption('q4', 'A', this)">
+                        <div class="quiz-option-label">A</div>
+                        <div class="quiz-option-text">推翻了沙皇专制统治</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q4', 'B', this)">
+                        <div class="quiz-option-label">B</div>
+                        <div class="quiz-option-text">建立了第一个无产阶级专政的社会主义国家</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q4', 'C', this)">
+                        <div class="quiz-option-label">C</div>
+                        <div class="quiz-option-text">促进了马克思主义的广泛传播</div>
+                    </div>
+                    <div class="quiz-option" onclick="selectOption('q4', 'D', this)">
+                        <div class="quiz-option-label">D</div>
+                        <div class="quiz-option-text">推动了国际工人运动的发展</div>
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <button class="quiz-btn quiz-btn-primary" onclick="checkAnswer('q4')">查看答案</button>
+                    <button class="quiz-btn quiz-btn-secondary" onclick="resetQuiz('q4')">重新作答</button>
+                </div>
+                <div class="quiz-answer" id="q4-answer">
+                    <div class="quiz-answer-title">✅ 正确答案：B</div>
+                    <div class="quiz-answer-content">
+                        <strong>解析：</strong>十月革命建立了世界上第一个社会主义国家，将社会主义从理论变为现实，开创了人类历史的新纪元。这是十月革命最深远的历史意义。A是二月革命的意义，C、D是十月革命的影响但不是最深远的意义。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 答案数据
+        const answers = {
+            q1: { correct: 'C', type: 'single' },
+            q2: { correct: ['A', 'B', 'C'], type: 'multi' },
+            q3: { correct: 'A', type: 'single' },
+            q4: { correct: 'B', type: 'single' }
+        };
+
+        // 用户选择状态
+        const userSelections = {};
+
+        // 切换侧边栏
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // 切换模块展开/收起
+        function toggleModule(header) {
+            header.classList.toggle('expanded');
+            const topics = header.nextElementSibling;
+            topics.classList.toggle('expanded');
+        }
+
+        // 显示对应内容
+        function showContent(id, element) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-topic').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            
+            // 更新面包屑
+            const module = element.closest('.nav-module');
+            const moduleName = module.querySelector('.nav-module-title').textContent.trim();
+            document.querySelector('.breadcrumb').innerHTML = `📚 ${moduleName} / <span>${element.textContent}</span>`;
+            
+            // 这里可以根据id加载不同内容
+            console.log('显示内容:', id);
+        }
+
+        // 切换视图
+        function switchView(view, btn) {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (view === 'knowledge') {
+                document.getElementById('knowledgeView').classList.remove('hidden');
+                document.getElementById('quizView').classList.add('hidden');
+            } else {
+                document.getElementById('knowledgeView').classList.add('hidden');
+                document.getElementById('quizView').classList.remove('hidden');
+            }
+        }
+
+        // 单选题选择
+        function selectOption(qId, option, element) {
+            if (answers[qId].type === 'multi') return;
+            
+            const container = document.getElementById(qId + '-options');
+            container.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+            element.classList.add('selected');
+            userSelections[qId] = option;
+        }
+
+        // 多选题选择
+        function toggleMultiOption(qId, option, element) {
+            if (!userSelections[qId]) userSelections[qId] = [];
+            
+            const index = userSelections[qId].indexOf(option);
+            if (index > -1) {
+                userSelections[qId].splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                userSelections[qId].push(option);
+                element.classList.add('selected');
+            }
+        }
+
+        // 检查单选答案
+        function checkAnswer(qId) {
+            const answer = answers[qId];
+            const container = document.getElementById(qId + '-options');
+            const options = container.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => {
+                const label = opt.querySelector('.quiz-option-label').textContent;
+                opt.classList.remove('selected');
+                
+                if (label === answer.correct) {
+                    opt.classList.add('correct');
+                } else if (userSelections[qId] === label) {
+                    opt.classList.add('wrong');
+                }
+            });
+            
+            document.getElementById(qId + '-answer').classList.add('show');
+        }
+
+        // 检查多选答案
+        function checkMultiAnswer(qId) {
+            const answer = answers[qId];
+            const container = document.getElementById(qId + '-options');
+            const options = container.querySelectorAll('.quiz-option');
+            const userAns = userSelections[qId] || [];
+            
+            options.forEach(opt => {
+                const label = opt.querySelector('.quiz-option-label').textContent;
+                opt.classList.remove('selected');
+                
+                if (answer.correct.includes(label)) {
+                    opt.classList.add('correct');
+                } else if (userAns.includes(label)) {
+                    opt.classList.add('wrong');
+                }
+            });
+            
+            document.getElementById(qId + '-answer').classList.add('show');
+        }
+
+        // 重置试题
+        function resetQuiz(qId) {
+            const container = document.getElementById(qId + '-options');
+            container.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'wrong');
+            });
+            document.getElementById(qId + '-answer').classList.remove('show');
+            delete userSelections[qId];
+        }
+
+        // 搜索功能
+        function handleSearch(value) {
+            console.log('搜索:', value);
+            // 这里可以实现实际的搜索逻辑
+        }
+    </script>
+</body>
+</html>
